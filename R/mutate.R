@@ -227,7 +227,7 @@ mutate_cols <- function(.data, ...) {
     return(NULL)
   }
 
-  new_columns <- list()
+  new_columns <- set_names(list(), character())
 
   tryCatch({
     for (i in seq_along(dots)) {
@@ -268,7 +268,7 @@ mutate_cols <- function(.data, ...) {
         }
       }
 
-      # evaluluate the chunks if needed
+      # evaluate the chunks if needed
       if (is.null(chunks)) {
         chunks <- mask$eval_all_mutate(dots[[i]])
       }
@@ -331,6 +331,9 @@ mutate_cols <- function(.data, ...) {
     } else {
       stop_dplyr(i, dots, fn = "mutate", problem = conditionMessage(e), parent = e)
     }
+  },
+  warning = function(w) {
+    warn_dplyr(i, dots, fn = "mutate", problem = conditionMessage(w), parent = w)
   })
 
   is_zap <- map_lgl(new_columns, inherits, "rlang_zap")
